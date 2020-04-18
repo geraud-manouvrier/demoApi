@@ -2,6 +2,6 @@ server:
   port: 8000
 bd:
   driver: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/demoapidb
+  url: jdbc:postgresql://35.184.12.137:5432/demoapidb
   username: postgres
   password: qande

@@ -40,7 +40,7 @@ public class PeopleController {
 		HttpHeaders responseHeaders 	= new HttpHeaders();
 		
 		responseHeaders.set("Content-Type", "application/json");
-		//Here are the other headers, but they are not standard response headers
+		//Here other headers, but they are not standard response headers
 		//responseHeaders.set("Authorization", "claveRespuesta");
 		//responseHeaders.set("Accept", "application/json");
 		
