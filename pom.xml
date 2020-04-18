@@ -6,7 +6,7 @@
 
 	<groupId>cl.geraud</groupId>
 	<artifactId>demoapi-rs</artifactId>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>demoapi-rs</name>
 	<description>Proyecto Rest Winne Group</description>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import Util.Transformer;
@@ -23,160 +25,176 @@ import cl.geraud.demoApi.rs.model.response.PersonResponse;
 @RestController
 public class PeopleController {
 
-	/*
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-	*/
 	@Autowired
 	PersonDao personDao;
 	
-	
 	@GetMapping("/people")
-	public List<PersonResponse> getPersons()
-	{
+	public ResponseEntity<List<PersonResponse>> getPersons(
+								@RequestHeader(value = "Content-Type", required = false) String headerContentType,
+								@RequestHeader(value = "Authorization", required = false) String headerAutorization,
+								@RequestHeader(value = "Accept", required = false) String headerAccept) {
+		
+		Transformer util				= new Transformer();
+		Validator validator				= new Validator();
 		List<PersonResponse> response	= new ArrayList<PersonResponse>();
-		Transformer util			= new Transformer();
-		//utilvalidateRut
-		response				= util.personsDbToPersonsResponse(personDao.getPersons());
+		HttpHeaders responseHeaders 	= new HttpHeaders();
 		
-		//if response is null
+		responseHeaders.set("Content-Type", "application/json");
+		//Here are the other headers, but they are not standard response headers
+		//responseHeaders.set("Authorization", "claveRespuesta");
+		//responseHeaders.set("Accept", "application/json");
 		
-	    return response;
+		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
+			return new ResponseEntity<List<PersonResponse>>(responseHeaders, HttpStatus.BAD_REQUEST);
+
+		response	= util.personsDbToPersonsResponse(personDao.getPersons());
+		
+		//This line has not sense, but if in the future it is wanted change th status when there are no person in DB, is easiest
+		if (response.size()==0)
+			return new ResponseEntity<List<PersonResponse>>(responseHeaders, HttpStatus.OK);
+
+		
+		return new ResponseEntity<List<PersonResponse>>(response, responseHeaders, HttpStatus.OK);
+		//return ResponseEntity.ok().headers(responseHeaders).body(response);
+		//return new ResponseEntity<List<PersonResponse>>(response, HttpStatus.OK);	//return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/people/{rut}")
-	public ResponseEntity<PersonResponse> getPersonById(@PathVariable("rut") String rut) {
+	public ResponseEntity<PersonResponse> getPersonById(
+								@RequestHeader(value = "Content-Type", required = false) String headerContentType,
+								@RequestHeader(value = "Authorization", required = false) String headerAutorization,
+								@RequestHeader(value = "Accept", required = false) String headerAccept, @PathVariable("rut") String rut) {
 		
-		PersonResponse response	= new PersonResponse();
-		Transformer util		= new Transformer();
+		Transformer util			= new Transformer();
+		Validator validator			= new Validator();
+		PersonResponse response		= new PersonResponse();
+		HttpHeaders responseHeaders	= new HttpHeaders();
 		
-		Validator validator		= new Validator();
+		responseHeaders.set("Content-Type", "application/json");
 		
-		if (!validator.isValidRut(rut, false)) {
-			return new ResponseEntity<PersonResponse>(HttpStatus.BAD_REQUEST);
-		}
+		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
+			return new ResponseEntity<PersonResponse>(responseHeaders, HttpStatus.BAD_REQUEST);
+		
+		if (!validator.isValidRut(rut, false))
+			return new ResponseEntity<PersonResponse>(responseHeaders, HttpStatus.BAD_REQUEST);
+
 		rut=rut.replace(".", "");
 		
 		response				= util.personDbToPersonResponse(personDao.getPersonFromDbByRut(rut));
 		
-		if (response.getRut()==null) {
-			return new ResponseEntity<PersonResponse>(HttpStatus.NOT_FOUND);
-		}
-		
-	    return ResponseEntity.ok(response);
+		if (response.getRut()==null)
+			return new ResponseEntity<PersonResponse>(responseHeaders, HttpStatus.NOT_FOUND);
+
+		return new ResponseEntity<PersonResponse>(response, responseHeaders, HttpStatus.OK);
 	}
 	
 	@PostMapping(value="/people")
-	public void createPerson(@RequestBody PersonRequest person) /* throws Exception --- throws NoSuchAlgorithmException */ {
+	public ResponseEntity<Void> createPerson(
+								@RequestHeader(value = "Content-Type", required = false) String headerContentType,
+								@RequestHeader(value = "Authorization", required = false) String headerAutorization,
+								@RequestHeader(value = "Accept", required = false) String headerAccept, @RequestBody PersonRequest person) {
 
-		Validator validator		= new Validator();
-		int statusValidation	= validator.validatePersonRequest(person, false);
-		if (statusValidation!=0) {
-			return;
-		}
+		Transformer util			= new Transformer();
+		Validator validator			= new Validator();
+		HttpHeaders responseHeaders	= new HttpHeaders();
+		int statusValidation		= -1;
+		boolean statusCreate;
+		
+		responseHeaders.set("Content-Type", "application/json");
+		
+		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+		
+		statusValidation		= validator.validatePersonRequest(person, false);
+		if (statusValidation!=0)
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+
 		person.setRut(person.getRut().replace(".", ""));
-		Transformer util		= new Transformer();
-		boolean statusCreate	=personDao.savePerson(util.personRequestToPersonDb(person));
+		statusCreate	=personDao.savePerson(util.personRequestToPersonDb(person));
 		
 		if (statusCreate)
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.CREATED);
 		else
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.FORBIDDEN);
 		
 	}
 	
 
 	
 	@PutMapping("/people/{rut}")
-	public void updatePersonById(@PathVariable("rut") String rut, @RequestBody PersonRequest person) {
+	public ResponseEntity<Void> updatePersonById(
+								@RequestHeader(value = "Content-Type", required = false) String headerContentType,
+								@RequestHeader(value = "Authorization", required = false) String headerAutorization,
+								@RequestHeader(value = "Accept", required = false) String headerAccept, @PathVariable("rut") String rut, @RequestBody PersonRequest person) {
 		
-		Validator validator		= new Validator();
-		int statusValidation	= validator.validatePersonRequest(person, true);
-		if (statusValidation!=0) {
-			return;
-		}
+		Transformer util			= new Transformer();
+		Validator validator			= new Validator();
+		HttpHeaders responseHeaders	= new HttpHeaders();
+		int statusValidation		= -1;
+		boolean statusUpdate;
 		
-		if (!validator.isValidRut(rut, false)) {
-			return;
-		}
+		responseHeaders.set("Content-Type", "application/json");
+		
+		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+		
+		statusValidation = validator.validatePersonRequest(person, true);
+		if (statusValidation!=0)
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+
+		
+		if (!validator.isValidRut(rut, false))
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+
 		rut=rut.replace(".", "");
 		
 		if (person.getRut()==null)
 			person.setRut(rut);
-		Transformer util			= new Transformer();
-		boolean statusUpdate=personDao.updatePersinByRut(util.personRequestToPersonDb(person));
+		else {
+			person.setRut(person.getRut().replace(".",  ""));
+			if (!rut.contentEquals(person.getRut()))
+				return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+		}
+		
+		statusUpdate = personDao.updatePersinByRut(util.personRequestToPersonDb(person));
 		if (statusUpdate)
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.OK);
 		else
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.FORBIDDEN);
 	}
 	
 	
 	
 	
 	@DeleteMapping("/people/{rut}")
-	public void deletePersonById(@PathVariable("rut") String rut)
+	public ResponseEntity<Void> deletePersonById(
+								@RequestHeader(value = "Content-Type", required = false) String headerContentType,
+								@RequestHeader(value = "Authorization", required = false) String headerAutorization,
+								@RequestHeader(value = "Accept", required = false) String headerAccept, @PathVariable("rut") String rut)
 	{
-		boolean statusDelete=personDao.deletePersonByRut(rut);
+		Validator validator			= new Validator();
+		HttpHeaders responseHeaders	= new HttpHeaders();
+		boolean statusDelete;
+		
+		responseHeaders.set("Content-Type", "application/json");
+		
+		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+		
+		if (!validator.isValidRut(rut, false))
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.BAD_REQUEST);
+
+		rut=rut.replace(".", "");
+		
+		statusDelete=personDao.deletePersonByRut(rut);
+		
 		if (statusDelete)
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.OK);
 		else
-			return;
+			return new ResponseEntity<Void>(responseHeaders, HttpStatus.NOT_FOUND);
 	}
 	
 	
 
 	
-	
-//	
-//	@PostMapping(value="/reporte-test")
-//	public int listarTest(@RequestParam String usuario, @RequestParam String contrasena) throws NoSuchAlgorithmException{
-//
-//		//
-//		String sql = "select count(*) as cant FROM public.testtb;";
-//		
-//		SqlRowSet result = jdbcTemplate.queryForRowSet(sql);
-//		
-//		int diff = -1;
-//		
-//		if(result.next()) {
-//			diff = (int) result.getDouble("cant");
-//			
-//		}
-//		
-//		return diff;
-//		
-//	}
-	
-//	@GetMapping(value="/person/list/")
-//	public int listPerson(@RequestParam(name="name", required = false, defaultValue = "Ahmed") String name) throws NoSuchAlgorithmException{
-//
-//		//
-//		String sql = "select count(*) as cant FROM public.testtb;";
-//		
-//		SqlRowSet result = jdbcTemplate.queryForRowSet(sql);
-//		
-//		int diff = -1;
-//		
-//		if(result.next()) {
-//			diff = (int) result.getDouble("cant");
-//			
-//		}
-//		
-//		return diff;
-//		
-//	}
-	
-	
-	/*
-	 * @RequestMapping(method = RequestMethod.GET) =>>>> @GetMapping
-	 * 
-	 * @RequestParam(required = false, defaultValue = "someValue", value="someAttr") String someAttr
-	 * 
-	 * @RequestMapping(
-		  value = "/ex/foos", 
-		  headers = { "key1=val1", "key2=val2" },
-		  method = GET, 
-		  headers = "Accept=application/json")
-	 */
 }
