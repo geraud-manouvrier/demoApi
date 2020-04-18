@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+
+	<property name="LOG_HOME" value="logs" />
+	<property name="LOG_NAME" value="demoapi-rs" />
+
+	<appender name="FILE-AUDIT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<charset>UTF-8</charset>
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss:SSS} %-5p [%thread] %X{RequestId} [%C{1}.%M[%L]] ==> %m%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${LOG_NAME}.log.%d{yyyy-MM-dd}</fileNamePattern>
+		</rollingPolicy>
+
+	</appender>
+
+	<logger name="cl.geraud.demoApi.rs" level="debug"
+		additivity="false">
+		<appender-ref ref="FILE-AUDIT" />
+	</logger>
+</configuration>
+
