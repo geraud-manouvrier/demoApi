@@ -7,10 +7,6 @@ public class PersonRequest {
 	private int age;
 	private String course;
 	
-	public PersonRequest() {
-		
-	}
-
 	public String getRut() {
 		return rut;
 	}

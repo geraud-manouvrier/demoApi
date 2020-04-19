@@ -54,7 +54,7 @@ public class Transformer {
 		
 		List<PersonResponse> personsResponse=new ArrayList<PersonResponse>();
 		for (int i=0; i<personsDb.size(); i++) {
-			PersonResponse personTemp=new PersonResponse();
+			PersonResponse personTemp;
 			personTemp = personDbToPersonResponse(personsDb.get(i));
 			personsResponse.add(personTemp);
 		}

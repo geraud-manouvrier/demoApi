@@ -27,15 +27,14 @@ public class Validator {
 	
 	//Generic Validations
 	public boolean isValidRut(String rut, boolean isNulleable) {
-		if (rut ==null && isNulleable)
-			return true;
-		if (rut ==null && !isNulleable)
-			return false;
+		//When rut is null, we exit with error or succes acording to is nulleable or not
+		if (rut==null)
+			return isNulleable;
 		
 		if (!isValidMaskRut(rut))
 			return false;
 		
-		int rutIntTemp=Integer.valueOf(rut.split("-")[0].replace(".", ""));
+		int rutIntTemp=Integer.parseInt(rut.split("-")[0].replace(".", ""));
 		if (rut.charAt(rut.length()-1)!=calculateDv(rutIntTemp))
 			return false;
 		
@@ -45,10 +44,8 @@ public class Validator {
 		Tool tool	= new Tool();
 		int maxLen	= tool.getPropertiesInt("lenName");
 		
-		if (name ==null && isNulleable)
-			return true;
-		if (name ==null && !isNulleable)
-			return false;
+		if (name ==null)
+			return isNulleable;
 		
 		if (name.length()>maxLen)
 			return false;
@@ -60,10 +57,9 @@ public class Validator {
 		Tool tool	= new Tool();
 		int maxLen	= tool.getPropertiesInt("lenLastName");
 		
-		if (lastName ==null && isNulleable)
-			return true;
-		if (lastName ==null && !isNulleable)
-			return false;
+		//When lastName is null, we exit with error or succes acording to is nulleable or not
+		if (lastName ==null)
+			return isNulleable;
 		
 		if (lastName.length()>maxLen)
 			return false;
@@ -76,10 +72,9 @@ public class Validator {
 		Tool tool	= new Tool();
 		int maxLen	= tool.getPropertiesInt("lenCourse");
 		
-		if (course ==null && isNulleable)
-			return true;
-		if (course ==null && !isNulleable)
-			return false;
+		//When course is null, we exit with error or succes acording to is nulleable or not
+		if (course ==null)
+			return isNulleable;
 		
 		if (course.length()>maxLen)
 			return false;
@@ -89,14 +84,13 @@ public class Validator {
 
 	public boolean isValidAge(int age, boolean isNulleable) {
 		Tool tool	= new Tool();
-		int minAge	= tool.getPropertiesInt("minAge");
+		int minAge	= 1;
 		int maxAge	= tool.getPropertiesInt("maxAge");
 		
+		//When course is null, we exit with error or succes acording to is nulleable or not
 		//Remember, int never are null!!!! (int != Integer)
-		if (age ==0 && isNulleable)
-			return true;
-		if (age ==0 && !isNulleable)
-			return false;
+		if (age ==0)
+			return isNulleable;
 		
 		if (age<minAge || age>maxAge)
 			return false;
@@ -130,7 +124,7 @@ public class Validator {
 		else if (digInt==10)
 			dv='K';
 		else
-			dv=Integer.toString(digInt).charAt(0);	// Character.forDigit(digInt, RADIX);
+			dv=Integer.toString(digInt).charAt(0);
 		
 		
 		return dv;

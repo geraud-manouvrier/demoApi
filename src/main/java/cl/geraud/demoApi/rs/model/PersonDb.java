@@ -9,10 +9,6 @@ public class PersonDb {
 	private int age;
 	private String course;
 	
-	public PersonDb() {
-		
-	}
-	
 	public int getRutInt() {
 		return rutInt;
 	}

@@ -26,7 +26,6 @@ public class ControllerAdvice {
 		LOGGER.debug("Saliendo del método errorException");
 		return new ResponseEntity<Void>(responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 		
-		//return;
 	}
 
 }

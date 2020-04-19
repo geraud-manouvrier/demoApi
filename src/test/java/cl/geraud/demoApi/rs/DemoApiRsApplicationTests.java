@@ -11,6 +11,7 @@ public class DemoApiRsApplicationTests {
 
 	@Test
 	public void contextLoads() {
+		//Do nothing
 	}
 
 }

@@ -69,7 +69,7 @@ public class DemoApiRsApplication {
 			
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {
-				
+				//Do nothing
 				
 			}
 		};

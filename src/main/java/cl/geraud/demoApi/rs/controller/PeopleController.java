@@ -1,6 +1,5 @@
 package cl.geraud.demoApi.rs.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +35,10 @@ public class PeopleController {
 		
 		Transformer util				= new Transformer();
 		Validator validator				= new Validator();
-		List<PersonResponse> response	= new ArrayList<PersonResponse>();
+		List<PersonResponse> response;
 		HttpHeaders responseHeaders 	= new HttpHeaders();
 		
 		responseHeaders.set("Content-Type", "application/json");
-		//Here other headers, but they are not standard response headers
-		//responseHeaders.set("Authorization", "claveRespuesta");
-		//responseHeaders.set("Accept", "application/json");
 		
 		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
 			return new ResponseEntity<List<PersonResponse>>(responseHeaders, HttpStatus.BAD_REQUEST);
@@ -50,13 +46,11 @@ public class PeopleController {
 		response	= util.personsDbToPersonsResponse(personDao.getPersons());
 		
 		//This line has not sense, but if in the future it is wanted change th status when there are no person in DB, is easiest
-		if (response.size()==0)
+		if (response.isEmpty())
 			return new ResponseEntity<List<PersonResponse>>(responseHeaders, HttpStatus.OK);
 
 		
 		return new ResponseEntity<List<PersonResponse>>(response, responseHeaders, HttpStatus.OK);
-		//return ResponseEntity.ok().headers(responseHeaders).body(response);
-		//return new ResponseEntity<List<PersonResponse>>(response, HttpStatus.OK);	//return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/people/{rut}")
@@ -67,7 +61,7 @@ public class PeopleController {
 		
 		Transformer util			= new Transformer();
 		Validator validator			= new Validator();
-		PersonResponse response		= new PersonResponse();
+		PersonResponse response;
 		HttpHeaders responseHeaders	= new HttpHeaders();
 		
 		responseHeaders.set("Content-Type", "application/json");
@@ -97,7 +91,7 @@ public class PeopleController {
 		Transformer util			= new Transformer();
 		Validator validator			= new Validator();
 		HttpHeaders responseHeaders	= new HttpHeaders();
-		int statusValidation		= -1;
+		int statusValidation;
 		boolean statusCreate;
 		
 		responseHeaders.set("Content-Type", "application/json");
@@ -130,7 +124,7 @@ public class PeopleController {
 		Transformer util			= new Transformer();
 		Validator validator			= new Validator();
 		HttpHeaders responseHeaders	= new HttpHeaders();
-		int statusValidation		= -1;
+		int statusValidation;
 		boolean statusUpdate;
 		
 		responseHeaders.set("Content-Type", "application/json");
