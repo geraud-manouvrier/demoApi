@@ -64,6 +64,9 @@ public class PeopleController {
 		PersonResponse response;
 		HttpHeaders responseHeaders	= new HttpHeaders();
 		
+		if (rut!=null)
+			rut=rut.replace("K", "k");
+		
 		responseHeaders.set("Content-Type", "application/json");
 		
 		if (validator.validateRequestHeaders(headerContentType, headerAutorization, headerAccept)!=0)
@@ -93,6 +96,9 @@ public class PeopleController {
 		HttpHeaders responseHeaders	= new HttpHeaders();
 		int statusValidation;
 		boolean statusCreate;
+		
+		if (person.getRut()!=null)
+			person.setRut(person.getRut().replace("K", "k"));
 		
 		responseHeaders.set("Content-Type", "application/json");
 		
@@ -126,6 +132,11 @@ public class PeopleController {
 		HttpHeaders responseHeaders	= new HttpHeaders();
 		int statusValidation;
 		boolean statusUpdate;
+		
+		if (person.getRut()!=null)
+			person.setRut(person.getRut().replace("K", "k"));
+		if (rut!=null)
+			rut=rut.replace("K", "k");
 		
 		responseHeaders.set("Content-Type", "application/json");
 		
@@ -169,6 +180,9 @@ public class PeopleController {
 		Validator validator			= new Validator();
 		HttpHeaders responseHeaders	= new HttpHeaders();
 		boolean statusDelete;
+		
+		if (rut!=null)
+			rut=rut.replace("K", "k");
 		
 		responseHeaders.set("Content-Type", "application/json");
 		

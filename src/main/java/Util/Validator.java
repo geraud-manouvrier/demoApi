@@ -122,7 +122,7 @@ public class Validator {
 		if (digInt==11)
 			dv='0';
 		else if (digInt==10)
-			dv='K';
+			dv='k';
 		else
 			dv=Integer.toString(digInt).charAt(0);
 		

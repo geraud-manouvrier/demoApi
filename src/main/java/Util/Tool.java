@@ -23,14 +23,14 @@ public class Tool {
 		try (FileInputStream inputStream = new FileInputStream(propFileName)) { 
 			prop.load(inputStream);
 		}catch(FileNotFoundException ex) {
-			LOGGER.error(ex.getMessage());
+			LOGGER.error(ex.toString());
 			try {
 				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
 			} catch (FileNotFoundException e) {
-				LOGGER.error(e.getMessage());
+				LOGGER.error(e.toString());
 			}
 		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error(e.toString());
 		}
 		
 		return prop;
