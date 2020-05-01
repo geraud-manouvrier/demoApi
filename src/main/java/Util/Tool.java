@@ -18,7 +18,7 @@ public class Tool {
 	private Properties getProperties()  {
 		
 		Properties prop = new Properties();
-		String propFileName = "/var/lib/tomcat8/webapps/demoapi-rs/WEB-INF/classes/config.properties";
+		String propFileName = "src/main/resources/config.properties";
 		
 		try (FileInputStream inputStream = new FileInputStream(propFileName)) { 
 			prop.load(inputStream);

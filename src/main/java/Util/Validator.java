@@ -162,13 +162,13 @@ public class Validator {
 			return 201;
 		if (!autorization.contentEquals(tokenApi))
 			return 202;
-		
+		/*
 		//Validate Accept
 		if (accept==null)
 			return 301;
 		if (!accept.contentEquals("application/json"))
 			return 302;
-		
+		*/
 		return 0;
 	}
 
